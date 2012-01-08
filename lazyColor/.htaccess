@@ -1,0 +1,5 @@
+directoryIndex lazyColor.html index.html index.htm index.php
+
+RewriteEngine On
+
+RewriteRule ^([0-9a-f]+)$ lazyColor.html/?color=$1 [L]
