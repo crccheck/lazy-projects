@@ -41,6 +41,7 @@ function difference(c1, c2){
   return Math.abs(d_r) + Math.abs(d_g) + Math.abs(d_b);
 }
 
+
 var old_color;
 $input.on('keyup change', function(){
   var color = isColor($input.val());
@@ -53,3 +54,9 @@ $input.on('keyup change', function(){
   }
 });
 
+
+var u = location.href;
+t = u.match(/[\w]+\/?$/);
+if (isColor(t)) {
+  $input.val(t).change();
+}
