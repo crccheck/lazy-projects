@@ -2,6 +2,9 @@ var colors = [["aliceblue","#f0f8ff"],["antiquewhite","#faebd7"],["aqua","#00fff
 var $tbody = $('#colorTable > tbody');
 var $input = $('#colorInput');
 
+var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
+                     window.history && window.history.pushState;
+
 jQuery.fn.sortElements = function() {
   return this.pushStack([].sort.apply( this, arguments ), []);
 };
@@ -42,17 +45,27 @@ function difference(c1, c2){
 }
 
 
-var old_color;
-$input.on('keyup change', function(){
-  var color = isColor($input.val());
+function new_color(color){
+  var old_color = window._oldColor;
   if (color && color != old_color){
     $tbody.sortChildren(function(a, b){
       return difference(color, $(a).data('color')) - difference(color, $(b).data('color'));
     });
     $tbody.find('tr > td:nth-child(1)').css('backgroundColor', '#' + color);
-    old_color = color;
+    window._oldColor = color;
   }
+}
+
+$input.on('keyup change', function(){
+  var color = isColor($input.val());
+  new_color(color);
 });
+
+
+// html5 history
+var appHistory = {
+  basePath: location.pathname
+};
 
 
 // autopopulate input if color found in url
@@ -61,5 +74,8 @@ $input.on('keyup change', function(){
   t = u.match(/([\w]+)\/?$/)[1];
   if (isColor(t)) {
     $input.val(t).change();
+    var pathname = location.pathname.split('/');
+    pathname.pop();
+    appHistory.basePath = pathname.join('/');
   }
 })();
