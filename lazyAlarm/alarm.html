@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="Description" content="Quickly set alarms" />
+<meta charset="utf-8" />
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.1.1/build/cssreset/reset-min.css" />
+<link rel="stylesheet" type="text/css" href="alarm.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<title>Alarm</title>
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+</head>
+<body>
+<header id="top">
+  <h1>LazyAlarm.com</h1>
+</header>
+<section id="help" class="box_shadow">
+  <h1>Help</h1>
+  <div class="content">
+    <p>Create an alarm by specifying a time. Examples of alarms include: <code>2am</code>, <code>4PM</code>, <code>5:10a</code>, <code>16</code>, <code>12:20a</code>.</p>
+    <p>Create a timer by specifying a duration. Examples of timers include: <code>2h</code>, <code>12h4s</code>, <code>60s</code>, <code>1h1m1s</code>.</p>
+    <p>You can enter additional text to give your alarm/timer a description. So a full example would be: <code>3:14p time to eat dunch/linner</code></p>
+  </div>
+</section>
+<section id="alarms">
+  <ul>
+    <li class="header"><div><input type="checkbox" class="enabled"><input class="entry" type="time"/></div><div><span class="start time" style="">&nbsp;</span><span id="time" class="time" title="Current Time">&nbsp;</span></div></li>
+  </ul>
+  <a id="addAlarm" class="button" href="#add">Add Alarm</a>
+</section>
+<section id="audio" class="box_shadow">
+  <h1><img src="img/music.gif" alt=""/>Alarms</h1>
+  <div class="content">
+  <p>Adding exclamation marks <code>!</code> to your alarms and timers will trigger different alarms. Alarms can be interrupted by hitting the 'ESC' key.</p>
+  <ul>
+    <li>
+      <h1>default</h1>
+      <a class="preview button" href="#preview" >Preview</a>
+      <audio>
+        <source src="audio/smb_fireball.ogg" />
+        <source src="audio/smb_fireball.mp3" />
+        <source src="audio/smb_fireball.wav" />
+      </audio>
+    </li>
+    <li>
+      <h1>!</h1>
+      <a class="preview button" href="#preview" >Preview</a>
+      <audio>
+        <source src="audio/sonar.ogg" />
+        <source src="audio/sonar.mp3" />
+        <source src="audio/sonar.wav" />
+      </audio>
+    </li>
+    <li>
+      <h1>!!</h1>
+      <a class="preview button" href="#preview" >Preview</a>
+      <audio>
+        <source src="audio/crashcym.ogg" />
+        <source src="audio/crashcym.mp3" />
+        <source src="audio/crashcym.wav" />
+      </audio>
+    </li>
+    <li>
+      <h1>!!!</h1>
+      <a class="preview button" href="#preview" >Preview</a>
+      <audio>
+        <source src="audio/alarm.ogg" />
+        <source src="audio/alarm.mp3" />
+        <source src="audio/alarm.wav" />
+      </audio>
+    </li>
+    <li>
+      <h1>!!!!</h1>
+      <a class="preview button" href="#preview" >Preview</a>
+      <audio>
+        <source src="audio/fax.ogg" />
+        <source src="audio/fax.mp3" />
+        <source src="audio/fax.wav" />
+      </audio>
+    </li>
+  </ul>
+  <p>Adding <code>repeat</code> to your alarm will make the alarm repeat after it's been triggered.</p>
+  <p>Adding a URL to your alarm will automatically open that URL at the end of the alarm under most conditions.</p>
+  </div>
+</section>
+<section id="prefs" class="box_shadow">
+    <h1><img src="img/gear.gif" alt=""/>Preferences</h1>
+  <div class="content">
+    <div class="option">
+      <h2>Date Format</h2>
+      <div><a id="time-24" class="button" href="#24"><strong>&#9679;</strong> 24-hour</a></div><div class="sep">&nbsp;</div><div><a id="time-12" class="button" href="#12"><strong>&#9680;</strong> 12-hour</a></div>
+    </div>
+    <p>
+      <a id="resetAll" class="button" href="#reset">Reset All</a>
+    </p>
+  </div>
+</section>
+<footer>
+</footer>
+<script src="alarm.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-6535799-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</body>
+</html>
