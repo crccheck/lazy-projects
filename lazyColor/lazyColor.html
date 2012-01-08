@@ -6,7 +6,13 @@
     <link rel="stylesheet" href="lazyColor.css">
   </head>
   <body>
-    <input id="colorInput" type="color" maxlength="7">
+    <p class="intro">
+      Every have a color and not sure if it's a purple or an indigo?
+      Just put the hex represented value here and I'll figure it out.
+    </p>
+    <p>
+      <input id="colorInput" type="color" maxlength="7">
+    </p>
     <table id="colorTable">
       <thead>
         <tr>
@@ -27,6 +33,12 @@
         </tr>
       </tfoot>
     </table>
+    <footer>
+      <p>
+      Color difference is model as over-simplistic distance betwween two
+      points in a cube space, which has very little to do with human perception.
+      </p>
+    </footer>
   </body>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js" type="text/javascript"></script>
   <script src="lazyColor.js" type="text/javascript">
