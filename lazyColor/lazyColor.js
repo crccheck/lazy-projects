@@ -55,8 +55,11 @@ $input.on('keyup change', function(){
 });
 
 
-var u = location.href;
-t = u.match(/[\w]+\/?$/);
-if (isColor(t)) {
-  $input.val(t).change();
-}
+// autopopulate input if color found in url
+(function (){
+  var u = location.href;
+  t = u.match(/([\w]+)\/?$/)[1];
+  if (isColor(t)) {
+    $input.val(t).change();
+  }
+})();
