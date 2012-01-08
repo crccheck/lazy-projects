@@ -2,6 +2,9 @@ var colors = [["aliceblue","#f0f8ff"],["antiquewhite","#faebd7"],["aqua","#00fff
 var $tbody = $('#colorTable > tbody');
 var $input = $('#colorInput');
 
+var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
+                     window.history && window.history.pushState;
+
 jQuery.fn.sortElements = function() {
   return this.pushStack([].sort.apply( this, arguments ), []);
 };
@@ -17,8 +20,8 @@ jQuery.fn.sortChildren = function(fn){
       '<td style="background-color: transparent;">&nbsp;</td>' +
       '<td style="background-color: ' + value[0] + ';">&nbsp;</td>' +
       '<td style="background-color: ' + value[1] + ';">&nbsp;</td>' +
-      '<td>' + value[0] + '</td>' +
-      '<td>' + value[1] + '</td>' +
+      '<td class="name">' + value[0] + '</td>' +
+      '<td class="hex">' + value[1] + '</td>' +
       '<tr>').data('color', value[1].substr(1)).appendTo($tbody);
   });
 })();
@@ -42,16 +45,42 @@ function difference(c1, c2){
 }
 
 
-var old_color;
-$input.on('keyup change', function(){
-  var color = isColor($input.val());
+function new_color(color, inPopState){
+  var old_color = window._oldColor;
   if (color && color != old_color){
     $tbody.sortChildren(function(a, b){
       return difference(color, $(a).data('color')) - difference(color, $(b).data('color'));
     });
     $tbody.find('tr > td:nth-child(1)').css('backgroundColor', '#' + color);
-    old_color = color;
+    window._oldColor = color;
+    if (ENABLE_HISTORY && inPopState !== true){
+      history.pushState({ color: color}, appHistory.newTitle(color), appHistory.newPath(color));
+    }
   }
+}
+
+$input.on('keyup change', function(){
+  var color = isColor($input.val());
+  new_color(color);
+});
+
+
+// html5 history
+var appHistory = {
+  basePath: location.pathname,
+  newPath: function(color){
+    return this.basePath + color + '/';
+  },
+  title: $('head > title').html(),
+  newTitle: function(color){
+    return $tbody.find('tr:first > td.name').text() + " " + this.title;
+  }
+};
+$(window).on("popstate", function(){
+  var state = history.state;
+  if (!state.color){ return; }
+  $input.val(state.color);
+  new_color(state.color, true);
 });
 
 
@@ -60,6 +89,12 @@ $input.on('keyup change', function(){
   var u = location.href;
   t = u.match(/([\w]+)\/?$/)[1];
   if (isColor(t)) {
+    var pathname = location.pathname.split('/');
+    // TODO improve this logic
+    pathname.pop();
+    pathname.pop();
+    appHistory.basePath = pathname.join('/') + '/';
+    console.log("override basepath", appHistory.basePath, pathname);
     $input.val(t).change();
   }
 })();
