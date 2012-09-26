@@ -3,6 +3,7 @@ var $tbody = $('#colorTable > tbody');
 var $input = $('#colorInput');
 
 var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
+                     location.href.substr(location.href.length - 1) == '/' &&
                      window.history && window.history.pushState;
 
 jQuery.fn.sortElements = function() {
