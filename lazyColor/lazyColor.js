@@ -39,16 +39,16 @@ function isColor(str){
 }
 
 function difference(c1, c2){
-  var d_r = parseInt(c1.substr(0, 2), 16) - parseInt(c2.substr(0, 2), 16),
-      d_g = parseInt(c1.substr(2, 2), 16) - parseInt(c2.substr(2, 2), 16),
-      d_b = parseInt(c1.substr(4, 2), 16) - parseInt(c2.substr(4, 2), 16);
-  return Math.abs(d_r) + Math.abs(d_g) + Math.abs(d_b);
+  c1 = Color.convert(c1, 'lab');
+  c2 = Color.convert(c2, 'lab');
+  return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
 }
 
 
 function new_color(color, inPopState){
   var old_color = window._oldColor;
   if (color && color != old_color){
+    // TODO pre-compute differences
     $tbody.sortChildren(function(a, b){
       return difference(color, $(a).data('color')) - difference(color, $(b).data('color'));
     });
