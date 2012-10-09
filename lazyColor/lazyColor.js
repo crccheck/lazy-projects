@@ -24,7 +24,10 @@ jQuery.fn.sortChildren = function(fn){
       '<td style="background-color: ' + value[1] + ';">&nbsp;</td>' +
       '<td class="name">' + value[0] + '</td>' +
       '<td class="hex">' + value[1] + '</td>' +
-      '<tr>').data('color', value[1].substr(1)).appendTo($tbody);
+      '<tr>')
+      .data('color', value[1].substr(1))
+      .data('lab', Color.convert(value[1].substr(1), 'lab'))
+      .appendTo($tbody);
   });
 })();
 
@@ -40,8 +43,6 @@ function isColor(str){
 }
 
 function difference(c1, c2){
-  c1 = Color.convert(c1, 'lab');
-  c2 = Color.convert(c2, 'lab');
   return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
 }
 
@@ -50,8 +51,9 @@ function new_color(color, inPopState){
   var old_color = window._oldColor;
   if (color && color != old_color){
     // TODO pre-compute differences
+    var lab = Color.convert(color, 'lab');
     $tbody.sortChildren(function(a, b){
-      return difference(color, $(a).data('color')) - difference(color, $(b).data('color'));
+      return difference(lab, $(a).data('lab')) - difference(lab, $(b).data('lab'));
     });
     $tbody.find('tr > td:nth-child(1)').css('backgroundColor', '#' + color);
     window._oldColor = color;
@@ -80,7 +82,7 @@ var appHistory = {
 };
 $(window).on("popstate", function(){
   var state = history.state;
-  if (!state.color){ return; }
+  if (!state || !state.color){ return; }
   $input.val(state.color);
   new_color(state.color, true);
 });
