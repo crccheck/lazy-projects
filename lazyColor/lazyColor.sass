@@ -1,3 +1,5 @@
+@import "compass/css3/transition"
+
 .top
   height: 10em
 
@@ -11,3 +13,8 @@
 
 .intro
   font-weight: bold
+
+td
+  +transition-property(background-color)
+  +transition-duration(1s)
+  +transition-timing-function(ease)
