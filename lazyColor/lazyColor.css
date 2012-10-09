@@ -1,0 +1,10 @@
+.top {
+  height: 6em; }
+
+.top-inner {
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid #bbbbbb;
+  position: fixed;
+  padding: 0.25em 0.5em 0;
+  top: 0;
+  width: 100%; }
