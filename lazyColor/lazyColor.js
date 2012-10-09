@@ -27,6 +27,10 @@ jQuery.fn.sortChildren = function(fn){
       '<tr>')
       .data('color', value[1].substr(1))
       .data('lab', Color.convert(value[1].substr(1), 'lab'))
+      .click(function(){
+        $input.val(value[1]).keyup();
+        $('html, body').animate({'scrollTop': 0});
+      })
       .appendTo($tbody);
   });
 })();
@@ -98,7 +102,7 @@ $(window).on("popstate", function(){
     pathname.pop();
     pathname.pop();
     appHistory.basePath = pathname.join('/') + '/';
-    console.log("override basepath", appHistory.basePath, pathname);
+    // console.log("override basepath", appHistory.basePath, pathname);
     $input.val(t).change();
   }
 })();
