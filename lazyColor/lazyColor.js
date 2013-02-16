@@ -9,51 +9,60 @@ var $tbody = $('#colorTable > tbody'),
 var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
                      location.href.substr(location.href.length - 1) == '/' &&
                      window.history && window.history.pushState;
+var utils = {};
 
-jQuery.fn.sortElements = function() {
-  return this.pushStack([].sort.apply( this, arguments ), []);
-};
+// Utils
+(function(exports, $){
+  "use strict";
+  $.fn.sortElements = function() {
+    return this.pushStack([].sort.apply( this, arguments ), []);
+  };
 
-jQuery.fn.sortChildren = function(fn){
-  this.children().sortElements(fn).appendTo(this);
-  return this;
-};
+  $.fn.sortChildren = function(fn){
+    this.children().sortElements(fn).appendTo(this);
+    return this;
+  };
 
-
-function isColor(str){
-  if (str[0] === '#') {
-    str = str.substr(1);
+  function isColor(str){
+    if (str[0] === '#') {
+      str = str.substr(1);
+    }
+    var test = /[0-9a-f]{6}/i;
+    if (test.test(str)){
+      return str;
+    }
+    return false;
   }
-  var test = /[0-9a-f]{6}/i;
-  if (test.test(str)){
-    return str;
+
+  function difference(c1, c2){
+    return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
   }
-  return false;
-}
 
-function difference(c1, c2){
-  return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
-}
-
-
-function new_color(color, inPopState){
-  var old_color = window._oldColor, lab;
-  if (color && color != old_color){
-    // TODO pre-compute differences
-    lab = Color.convert(color, 'lab');
-    $tbody.sortChildren(function(a, b){
-      return difference(lab, $(a).data('lab')) - difference(lab, $(b).data('lab'));
-    });
-    setTimeout(function(){
-      // HACK to get css transitions to work
-      $first.css('backgroundColor', '#' + color);
-    }, 1);
-    window._oldColor = color;
-    if (ENABLE_HISTORY && inPopState !== true){
-      history.pushState({ color: color}, appHistory.newTitle(color), appHistory.newPath(color));
+  function newColor(color, inPopState){
+    var old_color = window._oldColor, lab;
+    if (color && color != old_color){
+      // TODO pre-compute differences
+      lab = Color.convert(color, 'lab');
+      $tbody.sortChildren(function(a, b){
+        return difference(lab, $(a).data('lab')) - difference(lab, $(b).data('lab'));
+      });
+      setTimeout(function(){
+        // HACK to get css transitions to work
+        $first.css('backgroundColor', '#' + color);
+      }, 1);
+      window._oldColor = color;
+      if (ENABLE_HISTORY && inPopState !== true){
+        history.pushState({ color: color },
+          window.appHistory.newTitle(color),
+          window.appHistory.newPath(color));
+      }
     }
   }
-}
+
+  // exports
+  exports.isColor = isColor;
+  exports.newColor = newColor;
+})(utils, $);
 
 
 // Interaction UI
@@ -83,8 +92,8 @@ function new_color(color, inPopState){
   }
 
   $input.on('keyup change', function(){
-    var color = isColor($input.val());
-    new_color(color);
+    var color = utils.isColor($input.val());
+    utils.newColor(color);
   });
 
   var ACTIVE_CLASS = "btn-primary";
@@ -119,14 +128,14 @@ function new_color(color, inPopState){
     var state = history.state;
     if (!state || !state.color){ return; }
     $input.val(state.color);
-    new_color(state.color, true);
+    utils.newColor(state.color, true);
   });
 
 
   // autopopulate input if color found in url
   var u = location.href;
   var t = u.match(/([\w]+)\/?$/)[1];
-  if (isColor(t)) {
+  if (utils.isColor(t)) {
     var pathname = location.pathname.split('/');
     // TODO improve this logic
     pathname.pop();
@@ -135,6 +144,8 @@ function new_color(color, inPopState){
     // console.log("override basepath", appHistory.basePath, pathname);
     $input.val(t).change();
   }
+
+  window.appHistory = appHistory;
 })();
 
 
