@@ -14,9 +14,17 @@
             Ever have a color and not sure if it's a purple or an indigo?
             Just put the hex represented value here and I'll figure it out.
           </p>
-          <div>
-            <!-- TODO  make this input the same width as the table cell span2 -->
-            <input id="colorInput" class="span2" type="text" maxlength="7" placeholder="ECDF9A" autofocus>
+          <div class="row">
+            <div class="span2">
+              <!-- TODO  make this input the same width as the table cell span2 -->
+              <input id="colorInput" class="span2" type="text" maxlength="7" placeholder="ECDF9A" autofocus>
+            </div>
+            <div class="span4">
+              <div id="colors-picker" class="btn-group">
+                <button class="btn btn-small btn-primary" rel="w3ccolors">W3C</button>
+                <button class="btn btn-small" rel="hexcolors">Hexcolors</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

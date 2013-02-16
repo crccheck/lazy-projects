@@ -83,6 +83,15 @@ $input.on('keyup change', function(){
   new_color(color);
 });
 
+var ACTIVE_CLASS = "btn-primary";
+$('#colors-picker .btn').click(function(){
+  var $this = $(this);
+  if ($this.hasClass(ACTIVE_CLASS)) {
+    return;
+  }
+  $this.addClass(ACTIVE_CLASS).siblings().removeClass(ACTIVE_CLASS);
+  createTable(window[$this.attr('rel')]);
+});
 
 // html5 history
 var appHistory = {
