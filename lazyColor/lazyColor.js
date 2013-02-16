@@ -38,6 +38,8 @@ function createTable(colors){
       .appendTo($tbody);
   });
   $first = $tbody.find('tr > td:nth-child(1)');
+  window._oldColor = null;
+  $input.change();
 }
 
 createTable(w3ccolors);
