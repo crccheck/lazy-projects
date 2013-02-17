@@ -7,6 +7,6 @@ server:
 	python -m SimpleHTTPServer
 
 css:
-	sass --watch --compass lazyColor.sass
+	sass --watch --compass --style compressed lazyColor.sass
 
 .PHONY: dev dev devdev server css
