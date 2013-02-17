@@ -25,3 +25,9 @@ td {
   -moz-transition-timing-function: ease;
   -o-transition-timing-function: ease;
   transition-timing-function: ease; }
+
+.named {
+  background-color: white;
+  display: inline-block;
+  float: right;
+  width: 1em; }

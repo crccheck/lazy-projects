@@ -112,8 +112,7 @@ var utils = {};
     colors.forEach(function(value){
       $('<tr>' +
         '<td style="background-color: transparent;">&nbsp;</td>' +
-        '<td style="background-color: ' + value[0] + ';">&nbsp;</td>' +
-        '<td style="background-color: ' + value[1] + ';">&nbsp;</td>' +
+        '<td style="background-color: ' + value[1] + ';"><span class="named" style="background-color: ' + value[0] + ';">&nbsp;</span>&nbsp;</td>' +
         '<td class="name">' + value[0] + '</td>' +
         '<td class="hex">' + value[1] + '</td>' +
         '<tr>')
