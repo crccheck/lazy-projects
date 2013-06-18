@@ -28,9 +28,13 @@ var utils = (function(){
     var old_color = window._oldColor, lab;
     if (hex && hex != old_color){
       // TODO pre-compute differences
-      var d = Color.convert(hex, 'lab');
+      var d = Color.convert(hex, 'lab'),
+          hsv = Color.convert(hex, 'hsv');
       d.name = 'unknown';
       d.hex = '#' + hex;
+      d.h = hsv.h;
+      d.s = hsv.s;
+      d.v = hsv.v;
       lazyColor.sort(d);
       window._oldColor = hex;
       if (ENABLE_HISTORY && inPopState !== true){
@@ -125,10 +129,14 @@ var lazyColor = (function(exports){
   var renderColorTable = function(colors) {
     data = colors.map(function(value) {
       // manually extend the hash instead of using an extend helper for speed
-      var lab = Color.convert(value[1].substr(1), 'lab');
-      lab.name = value[0];
-      lab.hex = value[1];
-      return lab;
+      var d = Color.convert(value[1].substr(1), 'lab'),
+          hsv = Color.convert(value[1].substr(1), 'hsv');
+      d.name = value[0];
+      d.hex = value[1];
+      d.h = hsv.h;
+      d.s = hsv.s;
+      d.v = hsv.v;
+      return d;
     });
 
     rows = rows.data(data);
