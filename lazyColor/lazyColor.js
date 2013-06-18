@@ -44,7 +44,7 @@ var utils = {};
       // TODO pre-compute differences
       lab = Color.convert(color, 'lab');
       $tbody.sortChildren(function(a, b){
-        return difference(lab, $(a).data('lab')) - difference(lab, $(b).data('lab'));
+        return difference(lab, a.__data__.lab) - difference(lab, b.__data__.lab);
       });
       setTimeout(function(){
         // HACK to get css transitions to work
@@ -124,28 +124,29 @@ var utils = {};
         hex: value[1],
         lab: lab
       };
-        // .click(function(){
-        //   $input.val(value[1]).keyup();
-        //   $('html, body').animate({'scrollTop': 0});
-        // })
       data.push(row);
     });
 
     var rows = paper.selectAll('tr').data(data);
 
-    rows.enter().append('tr').html(function(d){
-      return '<td style="background-color: transparent;">&nbsp;</td>' +
-        '<td style="background-color: ' + d.hex + ';"><span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
-        '<td class="name">' + d.name + '</td>' +
-        '<td class="hex">' + d.hex + '</td>' +
-        '<tr>';
-    });
+    rows.enter()
+      .append('tr').html(function(d){
+        return '<td style="background-color: transparent;">&nbsp;</td>' +
+          '<td style="background-color: ' + d.hex + ';"><span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
+          '<td class="name">' + d.name + '</td>' +
+          '<td class="hex">' + d.hex + '</td>' +
+          '<tr>';
+      })
+      .on('click', function(d){
+        $input.val(d.hex).keyup();
+        $('html, body').animate({'scrollTop': 0});
+      });
 
     rows.exit().remove();
 
-    // $first = $tbody.find('tr > td:nth-child(1)');
-    // window._oldColor = null;
-    // $input.change();
+    $first = $tbody.find('tr > td:nth-child(1)');
+    window._oldColor = null;
+    $input.change();
   };
 
   $input.on('keyup change', function(){
