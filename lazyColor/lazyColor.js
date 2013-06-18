@@ -62,6 +62,7 @@ var utils = {};
   // exports
   exports.isColor = isColor;
   exports.newColor = newColor;
+  exports.distance = difference;
 })(utils, $);
 
 
@@ -137,8 +138,19 @@ var utils = {};
           '<td class="hex">' + d.hex + '</td>' +
           '<tr>';
       })
-      .on('click', function(d){
-        $input.val(d.hex).keyup();
+      .on('click', function(d) {
+        for (var i = 0, n = data.length; i < n; i++) {
+          data[i].distance = utils.distance(d.lab, data[i].lab);
+        }
+        rows.sort(function(a, b) {
+          return a.distance - b.distance;
+        });
+        // update form element
+        $input.val(d.hex);
+        // HACK to get css transitions to work, need to delay setting color
+        setTimeout(function() {
+          $first.css('backgroundColor', d.hex);
+        }, 1);
         $('html, body').animate({'scrollTop': 0});
       });
 
