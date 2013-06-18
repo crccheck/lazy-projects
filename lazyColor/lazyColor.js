@@ -97,18 +97,26 @@ var utils = (function(){
 var lazyColor = (function(exports){
   "use strict";
 
-  var paper = d3.select($tbody[0]), data;
-  var rows = paper.selectAll('tr');
-  window.zz = paper;
-  var weights = {
-    h: 0
-  };
+  var data,
+      lastD,
+      paper = d3.select($tbody[0]),
+      rows = paper.selectAll('tr'),
+      weights = {
+        h: 0
+      };
+
+  // bind DOM to `weights`
+  $('#weight-h').on('change', function(){
+    weights.h = this.value;
+    if (typeof lastD !== 'undefined') {
+      sortColorTable(lastD);
+    }
+  });
 
   var distance = function(c1, c2) {
     return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b) +
       weights.h * Math.abs(c1.h - c2.h);
   };
-
 
   var sortColorTable = function(d) {
     for (var i = 0, n = data.length; i < n; i++) {
@@ -124,7 +132,11 @@ var lazyColor = (function(exports){
       $first.css('backgroundColor', d.hex);
     }, 1);
     // scroll to the top of the page
-    $('html, body').animate({'scrollTop': 0});
+    var $page = $('html, body');
+    if (!$page.filter(':animated').length){  // basic debounce
+      $page.animate({'scrollTop': 0});
+    }
+    lastD = d;
   };
 
   // render the table, replacing the tbody
@@ -146,8 +158,11 @@ var lazyColor = (function(exports){
     rows = rows.data(data);
     rows.enter()
       .append('tr').html(function(d){
+        var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
+          ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
         return '<td style="background-color: transparent;">&nbsp;</td>' +
-          '<td style="background-color: ' + d.hex + ';"><span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
+          '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
+          '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
           '<td class="name">' + d.name + '</td>' +
           '<td class="hex">' + d.hex + '</td>' +
           '<tr>';
