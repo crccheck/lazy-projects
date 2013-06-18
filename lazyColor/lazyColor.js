@@ -9,20 +9,10 @@ var $tbody = $('#colorTable > tbody'),
 var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
                      location.href.substr(location.href.length - 1) == '/' &&
                      window.history && window.history.pushState;
-var utils = {};
 
 // Utils
-(function(exports, $){
+var utils = (function(){
   "use strict";
-  $.fn.sortElements = function() {
-    return this.pushStack([].sort.apply( this, arguments ), []);
-  };
-
-  $.fn.sortChildren = function(fn){
-    this.children().sortElements(fn).appendTo(this);
-    return this;
-  };
-
   function isColor(str){
     if (str[0] === '#') {
       str = str.substr(1);
@@ -38,32 +28,31 @@ var utils = {};
     return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
   }
 
-  function newColor(color, inPopState){
+  var newColor = function(hex, inPopState) {
     var old_color = window._oldColor, lab;
-    if (color && color != old_color){
+    if (hex && hex != old_color){
       // TODO pre-compute differences
-      lab = Color.convert(color, 'lab');
-      $tbody.sortChildren(function(a, b){
-        return difference(lab, a.__data__.lab) - difference(lab, b.__data__.lab);
-      });
-      setTimeout(function(){
-        // HACK to get css transitions to work
-        $first.css('backgroundColor', '#' + color);
-      }, 1);
-      window._oldColor = color;
+      var d = {
+        hex: '#' + hex,
+        lab: Color.convert(hex, 'lab')
+      };
+      lazyColor.sort(d);
+      window._oldColor = hex;
       if (ENABLE_HISTORY && inPopState !== true){
-        history.pushState({ color: color },
-          window.appHistory.newTitle(color),
-          window.appHistory.newPath(color));
+        history.pushState({ color: hex },
+          window.appHistory.newTitle(hex),
+          window.appHistory.newPath(hex));
       }
     }
-  }
+  };
 
   // exports
-  exports.isColor = isColor;
-  exports.newColor = newColor;
-  exports.distance = difference;
-})(utils, $);
+  return {
+    distance: difference,
+    isColor: isColor,
+    newColor: newColor
+  };
+})();
 
 
 // HTML5 History
@@ -157,7 +146,6 @@ var lazyColor = (function(exports){
     rows.exit().remove();
 
     $first = $tbody.find('tr > td:nth-child(1)');
-    window._oldColor = null;
     $input.change();
   };
 
