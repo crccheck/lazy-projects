@@ -107,7 +107,7 @@ var utils = {};
 
 // Interaction UI
 /*global $tbody, Color, d3 */
-(function(){
+var lazyColor = (function(exports){
   "use strict";
 
   var paper = d3.select($tbody[0]), data;
@@ -177,9 +177,12 @@ var utils = {};
   });
 
   // exports
-  window.renderColorTable = renderColorTable;
+  return {
+    renderColorTable: renderColorTable,
+    sort: sortColorTable
+  };
 })();
 
 
 // Main
-window.renderColorTable(w3ccolors);
+lazyColor.renderColorTable(w3ccolors);
