@@ -110,26 +110,41 @@ var utils = {};
 (function(){
   "use strict";
 
-  var paper = d3.select($tbody[0]);
+  var paper = d3.select($tbody[0]), data;
+  var rows = paper.selectAll('tr');
   window.zz = paper;
+
+
+  var sortColorTable = function(d) {
+    for (var i = 0, n = data.length; i < n; i++) {
+      data[i].distance = utils.distance(d.lab, data[i].lab);
+    }
+    rows.sort(function(a, b) {
+      return a.distance - b.distance;
+    });
+    // update form element
+    $input.val(d.hex);
+    // HACK to get css transitions to work, need to delay setting color
+    setTimeout(function() {
+      $first.css('backgroundColor', d.hex);
+    }, 1);
+    // scroll to the top of the page
+    $('html, body').animate({'scrollTop': 0});
+  };
 
   // render the table, replacing the tbody
   // arguments:
   //   colors: an array of [name, rgb]
   var renderColorTable = function(colors) {
-    var data = [];
-    colors.forEach(function(value){
-      var lab = Color.convert(value[1].substr(1), 'lab'),
-      row = {
+    data = colors.map(function(value) {
+      return {
         name: value[0],
         hex: value[1],
-        lab: lab
+        lab: Color.convert(value[1].substr(1), 'lab')
       };
-      data.push(row);
     });
 
-    var rows = paper.selectAll('tr').data(data);
-
+    rows = rows.data(data);
     rows.enter()
       .append('tr').html(function(d){
         return '<td style="background-color: transparent;">&nbsp;</td>' +
@@ -138,22 +153,7 @@ var utils = {};
           '<td class="hex">' + d.hex + '</td>' +
           '<tr>';
       })
-      .on('click', function(d) {
-        for (var i = 0, n = data.length; i < n; i++) {
-          data[i].distance = utils.distance(d.lab, data[i].lab);
-        }
-        rows.sort(function(a, b) {
-          return a.distance - b.distance;
-        });
-        // update form element
-        $input.val(d.hex);
-        // HACK to get css transitions to work, need to delay setting color
-        setTimeout(function() {
-          $first.css('backgroundColor', d.hex);
-        }, 1);
-        $('html, body').animate({'scrollTop': 0});
-      });
-
+      .on('click', sortColorTable);
     rows.exit().remove();
 
     $first = $tbody.find('tr > td:nth-child(1)');
