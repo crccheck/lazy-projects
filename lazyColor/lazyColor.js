@@ -100,9 +100,13 @@ var lazyColor = (function(exports){
   var paper = d3.select($tbody[0]), data;
   var rows = paper.selectAll('tr');
   window.zz = paper;
+  var weights = {
+    h: 0
+  };
 
   var distance = function(c1, c2) {
-    return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
+    return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b) +
+      weights.h * Math.abs(c1.h - c2.h);
   };
 
 
