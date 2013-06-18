@@ -105,9 +105,13 @@ var utils = {};
 
 
 // Interaction UI
+/*global $tbody */
 (function(){
   "use strict";
-  function createTable(colors){
+  // render the table, replacing the tbody
+  // arguments:
+  //   colors: an array of [name, rgb]
+  var renderColorTable = function(colors) {
     $tbody.empty();
     colors.forEach(function(value){
       $('<tr>' +
@@ -127,7 +131,7 @@ var utils = {};
     $first = $tbody.find('tr > td:nth-child(1)');
     window._oldColor = null;
     $input.change();
-  }
+  };
 
   $input.on('keyup change', function(){
     var color = utils.isColor($input.val());
@@ -141,13 +145,13 @@ var utils = {};
       return;
     }
     $this.addClass(ACTIVE_CLASS).siblings().removeClass(ACTIVE_CLASS);
-    createTable(window[$this.attr('rel')]);
+    renderColorTable(window[$this.attr('rel')]);
   });
 
   // exports
-  window.createTable = createTable;
+  window.renderColorTable = renderColorTable;
 })();
 
 
 // Main
-window.createTable(w3ccolors);
+window.renderColorTable(w3ccolors);
