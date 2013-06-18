@@ -17,7 +17,7 @@ var utils = (function(){
     if (str[0] === '#') {
       str = str.substr(1);
     }
-    var test = /[0-9a-f]{6}/i;
+    var test = /([0-9a-f]{3}){1,2}/i;
     if (test.test(str)){
       return str;
     }
