@@ -24,10 +24,6 @@ var utils = (function(){
     return false;
   }
 
-  function difference(c1, c2){
-    return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
-  }
-
   var newColor = function(hex, inPopState) {
     var old_color = window._oldColor, lab;
     if (hex && hex != old_color){
@@ -48,7 +44,6 @@ var utils = (function(){
 
   // exports
   return {
-    distance: difference,
     isColor: isColor,
     newColor: newColor
   };
@@ -103,10 +98,14 @@ var lazyColor = (function(exports){
   var rows = paper.selectAll('tr');
   window.zz = paper;
 
+  var distance = function(c1, c2) {
+    return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
+  };
+
 
   var sortColorTable = function(d) {
     for (var i = 0, n = data.length; i < n; i++) {
-      data[i].distance = utils.distance(d.lab, data[i].lab);
+      data[i].distance = distance(d.lab, data[i].lab);
     }
     rows.sort(function(a, b) {
       return a.distance - b.distance;
