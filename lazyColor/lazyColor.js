@@ -105,32 +105,47 @@ var utils = {};
 
 
 // Interaction UI
-/*global $tbody */
+/*global $tbody, Color, d3 */
 (function(){
   "use strict";
+
+  var paper = d3.select($tbody[0]);
+  window.zz = paper;
+
   // render the table, replacing the tbody
   // arguments:
   //   colors: an array of [name, rgb]
   var renderColorTable = function(colors) {
-    $tbody.empty();
+    var data = [];
     colors.forEach(function(value){
-      $('<tr>' +
-        '<td style="background-color: transparent;">&nbsp;</td>' +
-        '<td style="background-color: ' + value[1] + ';"><span class="named" style="background-color: ' + value[0] + ';">&nbsp;</span>&nbsp;</td>' +
-        '<td class="name">' + value[0] + '</td>' +
-        '<td class="hex">' + value[1] + '</td>' +
-        '<tr>')
-        .data('color', value[1].substr(1))
-        .data('lab', Color.convert(value[1].substr(1), 'lab'))
-        .click(function(){
-          $input.val(value[1]).keyup();
-          $('html, body').animate({'scrollTop': 0});
-        })
-        .appendTo($tbody);
+      var lab = Color.convert(value[1].substr(1), 'lab'),
+      row = {
+        name: value[0],
+        hex: value[1],
+        lab: lab
+      };
+        // .click(function(){
+        //   $input.val(value[1]).keyup();
+        //   $('html, body').animate({'scrollTop': 0});
+        // })
+      data.push(row);
     });
-    $first = $tbody.find('tr > td:nth-child(1)');
-    window._oldColor = null;
-    $input.change();
+
+    var rows = paper.selectAll('tr').data(data);
+
+    rows.enter().append('tr').html(function(d){
+      return '<td style="background-color: transparent;">&nbsp;</td>' +
+        '<td style="background-color: ' + d.hex + ';"><span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
+        '<td class="name">' + d.name + '</td>' +
+        '<td class="hex">' + d.hex + '</td>' +
+        '<tr>';
+    });
+
+    rows.exit().remove();
+
+    // $first = $tbody.find('tr > td:nth-child(1)');
+    // window._oldColor = null;
+    // $input.change();
   };
 
   $input.on('keyup change', function(){
