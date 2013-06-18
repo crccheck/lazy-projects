@@ -102,7 +102,12 @@ var lazyColor = (function(exports){
       paper = d3.select($tbody[0]),
       rows = paper.selectAll('tr'),
       weights = {
-        h: 0
+        l: 1,
+        a: 1,
+        b: 1,
+        h: 0,
+        s: 0,
+        v: 0
       };
 
   // bind DOM to `weights`
@@ -112,10 +117,26 @@ var lazyColor = (function(exports){
       sortColorTable(lastD);
     }
   });
+  $('#weight-s').on('change', function(){
+    weights.s = this.value;
+    if (typeof lastD !== 'undefined') {
+      sortColorTable(lastD);
+    }
+  });
+  $('#weight-v').on('change', function(){
+    weights.v = this.value;
+    if (typeof lastD !== 'undefined') {
+      sortColorTable(lastD);
+    }
+  });
 
   var distance = function(c1, c2) {
-    return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b) +
-      weights.h * Math.abs(c1.h - c2.h);
+    return Math.abs(c1.l - c2.l) +
+      Math.abs(c1.a - c2.a) +
+      Math.abs(c1.b - c2.b) +
+      weights.h * Math.abs(c1.h - c2.h) +
+      weights.s * Math.abs(c1.s - c2.s) +
+      weights.v * Math.abs(c1.v - c2.v);
   };
 
   var sortColorTable = function(d) {
