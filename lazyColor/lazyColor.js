@@ -9,20 +9,10 @@ var $tbody = $('#colorTable > tbody'),
 var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
                      location.href.substr(location.href.length - 1) == '/' &&
                      window.history && window.history.pushState;
-var utils = {};
 
 // Utils
-(function(exports, $){
+var utils = (function(){
   "use strict";
-  $.fn.sortElements = function() {
-    return this.pushStack([].sort.apply( this, arguments ), []);
-  };
-
-  $.fn.sortChildren = function(fn){
-    this.children().sortElements(fn).appendTo(this);
-    return this;
-  };
-
   function isColor(str){
     if (str[0] === '#') {
       str = str.substr(1);
@@ -34,35 +24,33 @@ var utils = {};
     return false;
   }
 
-  function difference(c1, c2){
-    return Math.abs(c1.l - c2.l) + Math.abs(c1.a - c2.a) + Math.abs(c1.b - c2.b);
-  }
-
-  function newColor(color, inPopState){
+  var newColor = function(hex, inPopState) {
     var old_color = window._oldColor, lab;
-    if (color && color != old_color){
+    if (hex && hex != old_color){
       // TODO pre-compute differences
-      lab = Color.convert(color, 'lab');
-      $tbody.sortChildren(function(a, b){
-        return difference(lab, $(a).data('lab')) - difference(lab, $(b).data('lab'));
-      });
-      setTimeout(function(){
-        // HACK to get css transitions to work
-        $first.css('backgroundColor', '#' + color);
-      }, 1);
-      window._oldColor = color;
+      var d = Color.convert(hex, 'lab'),
+          hsv = Color.convert(hex, 'hsv');
+      d.name = 'unknown';
+      d.hex = '#' + hex;
+      d.h = hsv.h;
+      d.s = hsv.s;
+      d.v = hsv.v;
+      lazyColor.sort(d);
+      window._oldColor = hex;
       if (ENABLE_HISTORY && inPopState !== true){
-        history.pushState({ color: color },
-          window.appHistory.newTitle(color),
-          window.appHistory.newPath(color));
+        history.pushState({ color: hex },
+          window.appHistory.newTitle(hex),
+          window.appHistory.newPath(hex));
       }
     }
-  }
+  };
 
   // exports
-  exports.isColor = isColor;
-  exports.newColor = newColor;
-})(utils, $);
+  return {
+    isColor: isColor,
+    newColor: newColor
+  };
+})();
 
 
 // HTML5 History
@@ -105,29 +93,107 @@ var utils = {};
 
 
 // Interaction UI
-(function(){
+/*global $tbody, Color, d3 */
+var lazyColor = (function(exports){
   "use strict";
-  function createTable(colors){
-    $tbody.empty();
-    colors.forEach(function(value){
-      $('<tr>' +
-        '<td style="background-color: transparent;">&nbsp;</td>' +
-        '<td style="background-color: ' + value[1] + ';"><span class="named" style="background-color: ' + value[0] + ';">&nbsp;</span>&nbsp;</td>' +
-        '<td class="name">' + value[0] + '</td>' +
-        '<td class="hex">' + value[1] + '</td>' +
-        '<tr>')
-        .data('color', value[1].substr(1))
-        .data('lab', Color.convert(value[1].substr(1), 'lab'))
-        .click(function(){
-          $input.val(value[1]).keyup();
-          $('html, body').animate({'scrollTop': 0});
-        })
-        .appendTo($tbody);
+
+  var data,
+      lastD,
+      paper = d3.select($tbody[0]),
+      rows = paper.selectAll('tr'),
+      weights = {
+        l: 1,
+        a: 1,
+        b: 1,
+        h: 0,
+        s: 0,
+        v: 0
+      };
+
+  // bind DOM to `weights`
+  $('#weight-h').on('change', function(){
+    weights.h = this.value;
+    if (typeof lastD !== 'undefined') {
+      sortColorTable(lastD);
+    }
+  });
+  $('#weight-s').on('change', function(){
+    weights.s = this.value;
+    if (typeof lastD !== 'undefined') {
+      sortColorTable(lastD);
+    }
+  });
+  $('#weight-v').on('change', function(){
+    weights.v = this.value;
+    if (typeof lastD !== 'undefined') {
+      sortColorTable(lastD);
+    }
+  });
+
+  var distance = function(c1, c2) {
+    return Math.abs(c1.l - c2.l) +
+      Math.abs(c1.a - c2.a) +
+      Math.abs(c1.b - c2.b) +
+      weights.h * Math.abs(c1.h - c2.h) +
+      weights.s * Math.abs(c1.s - c2.s) +
+      weights.v * Math.abs(c1.v - c2.v);
+  };
+
+  var sortColorTable = function(d) {
+    for (var i = 0, n = data.length; i < n; i++) {
+      data[i].distance = distance(d, data[i]);
+    }
+    rows.sort(function(a, b) {
+      return a.distance - b.distance;
     });
+    // update form element
+    $input.val(d.hex);
+    // HACK to get css transitions to work, need to delay setting color
+    setTimeout(function() {
+      $first.css('backgroundColor', d.hex);
+    }, 1);
+    // scroll to the top of the page
+    var $page = $('html, body');
+    if (!$page.filter(':animated').length){  // basic debounce
+      $page.animate({'scrollTop': 0});
+    }
+    lastD = d;
+  };
+
+  // render the table, replacing the tbody
+  // arguments:
+  //   colors: an array of [name, rgb]
+  var renderColorTable = function(colors) {
+    data = colors.map(function(value) {
+      // manually extend the hash instead of using an extend helper for speed
+      var d = Color.convert(value[1].substr(1), 'lab'),
+          hsv = Color.convert(value[1].substr(1), 'hsv');
+      d.name = value[0];
+      d.hex = value[1];
+      d.h = hsv.h;
+      d.s = hsv.s;
+      d.v = hsv.v;
+      return d;
+    });
+
+    rows = rows.data(data);
+    rows.enter()
+      .append('tr').html(function(d){
+        var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
+          ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
+        return '<td style="background-color: transparent;">&nbsp;</td>' +
+          '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
+          '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
+          '<td class="name">' + d.name + '</td>' +
+          '<td class="hex">' + d.hex + '</td>' +
+          '<tr>';
+      })
+      .on('click', sortColorTable);
+    rows.exit().remove();
+
     $first = $tbody.find('tr > td:nth-child(1)');
-    window._oldColor = null;
     $input.change();
-  }
+  };
 
   $input.on('keyup change', function(){
     var color = utils.isColor($input.val());
@@ -141,13 +207,16 @@ var utils = {};
       return;
     }
     $this.addClass(ACTIVE_CLASS).siblings().removeClass(ACTIVE_CLASS);
-    createTable(window[$this.attr('rel')]);
+    renderColorTable(window[$this.attr('rel')]);
   });
 
   // exports
-  window.createTable = createTable;
+  return {
+    renderColorTable: renderColorTable,
+    sort: sortColorTable
+  };
 })();
 
 
 // Main
-window.createTable(w3ccolors);
+lazyColor.renderColorTable(w3ccolors);
