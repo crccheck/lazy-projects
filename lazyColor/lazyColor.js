@@ -3,8 +3,7 @@ var w3ccolors = [["aliceblue","#f0f8ff"],["antiquewhite","#faebd7"],["aqua","#00
 var hexcolors = [["Abacas","#ABACA5"],["Abbess","#ABBE55"],["Accede","#ACCEDE"],["Access","#ACCE55"],["Accost","#ACC057"],["Acetal","#ACE7A1"],["Affect","#AFFEC7"],["Afloat","#AF10A7"],["Albata","#A1BA7A"],["Albedo","#A1BED0"],["Aldose","#A1D05E"],["Allele","#A11E1E"],["Assess","#A55E55"],["Assets","#A55E75"],["Allest","#A77E57"],["Babble","#BABB1E"],["Badass","#BADA55"],["Baffle","#BAFF1E"],["Balata","#BA1A7A"],["Balboa","#BA1B0A"],["Ballad","#BA11AD"],["Ballet","#BA11E7"],["Ballot","#BA1107"],["Basalt","#BA5A17"],["Basset","#BA55E7"],["Battle","#BA771E"],["Beaded","#BEADED"],["Beetle","#BEE71E"],["Befall","#BEFA11"],["Befool","#BEF001"],["Belted","#BE17ED"],["Blotto","#B10770"],["Bobble","#B0BB1E"],["Bobcat","#B0BCA7"],["Boobee","#B00BEE"],["Boodle","#B00D1E"],["Booted","#B007ED"],["Bootee","#B007ED"],["Bottle","#B0771E"],["Cabala","#CABA1A"],["Cabbie","#CABB1E"],["Cablet","#CAB1E7"],["Calces","#CA1CE5"],["Casaba","#CA5ABA"],["Castle","#CA571E"],["Catalo","#CA7A10"],["Cattle","#CA771E"],["Closed","#C105ED"],["Closet","#C105E7"],["Cobalt","#C0BA17"],["Cobble","#C0BB1E"],["Coddle","#C0DD1E"],["Coffee","#C0FFEE"],["Coffle","#C0FF1E"],["Collet","#C011E7"],["Cosset","#C055E7"],["Dabble","#DABB1E"],["Doddle","#D0DD1E"],["Debase","#DEBA5E"],["Decade","#DECADE"],["Decaff","#DECAFF"],["Decode","#DEC0DE"],["Deface","#DEFACE"],["Defeat","#DEFEA7"],["Defect","#DEFEC7"],["Delete","#DE1E7E"],["Detect","#DE7EC7"],["Detest","#DE7E57"],["Doodle","#D00D1E"],["Dossal","#D055A1"],["Dotted","#D077ED"],["Dottle","#D0771E"],["Efface","#EFFACE"],["Effect","#EFFEC7"],["Effete","#EFFE7E"],["Eldest","#E1DE57"],["Fabled","#FAB1ED"],["Faeces","#FAECE5"],["Fallal","#FA11A1"],["Fasces","#FA5CE5"],["Feeble","#FEEB1E"],["Felloe","#FE110E"],["Festal","#FE57A1"],["Fettle","#FE771E"],["Fleece","#F1EECE"],["Floats","#F10A75"],["Fiasco","#F1A5C0"],["Footed","#F007ED"],["Footle","#F0071E"],["LabLab","#1AB1AB"],["Lessee","#1E55EE"],["Loaded","#10ADED"],["Locale","#10CA1E"],["Obsess","#0B5E55"],["Obtect","#0B7EC7"],["Obtest","#0B7E57"],["0celot","#0CE107"],["Offset","#0FF5E7"],["Oldest","#01DE57"],["Oddles","#00D1E5"],["Osteal","#057EA1"],["Saddle","#5ADD1E"],["Salade","#5A1ADE"],["Sallet","#5A11E7"],["Salted","#5A17ED"],["Sealed","#5EA1ED"],["Secede","#5ECEDE"],["Select","#5E1EC7"],["Setose","#5E705E"],["Settee","#5E77EE"],["Settle","#5E771E"],["Solace","#501ACE"],["Sotted","#5077ED"],["Stable","#57AB1E"],["Stacte","#57AC7E"],["Steels","#57EE15"],["Tables","#7AB1E5"],["Tablet","#7AB1E7"],["Tassle","#7A55E1"],["Tasset","#7A55E7"],["Tattle","#7A771E"],["Tattoo","#7A7700"],["Teasel","#7EA5E1"],["Testee","#7E57EE"],["Testes","#7E57E5"],["Toddle","#70DD1E"],["Toffee","#70FFEE"],["Tootle","#70071E"]];
 
 var $tbody = $('#colorTable > tbody'),
-    $input = $('#colorInput'),
-    $first;
+    $input = $('#colorInput');
 
 var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
                      location.href.substr(location.href.length - 1) == '/' &&
@@ -81,7 +80,9 @@ var lazyColor = (function(exports){
 
   var data,
       lastD,
-      paper = d3.select($tbody[0]),
+      $first,
+      $el = $tbody,
+      paper = d3.select($el[0]),
       rows = paper.selectAll('tr'),
       weights = {
         l: 1,
@@ -183,8 +184,7 @@ var lazyColor = (function(exports){
     rows.exit()
       .remove();
 
-    $first = $tbody.find('tr > td:nth-child(1)');
-    $input.change();
+    $first = $el.find('tr > td:nth-child(1)');
   };
 
   // change color
