@@ -14,12 +14,13 @@ var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
 var utils = (function() {
   "use strict";
   // returns the color in hex or false
+  var colorRE = /^([0-9a-f]{3}){1,2}$/i;
+
   var isColor = function(str) {
     if (str[0] === '#') {
       str = str.substr(1);
     }
-    var test = /([0-9a-f]{3}){1,2}/i;
-    if (test.test(str)){
+    if (colorRE.test(str)){
       return str;
     }
     return false;
@@ -240,7 +241,9 @@ var lazyColor = (function(exports){
 
   $input.on('keyup change', function(){
     var color = utils.isColor($input.val());
-    lazyColor.newColor(color);
+    if (color) {
+      lazyColor.newColor(color);
+    }
   });
 
   $('#colors-picker .btn').click(function(){
