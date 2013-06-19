@@ -224,7 +224,17 @@ var lazyColor = (function(exports){
 (function(){
   "use strict";
 
+  // options
   var ACTIVE_CLASS = "btn-primary";
+
+  // TODO remember choice for... 30 days?
+  $('<a class="btn btn-info btn-mini">Ok, I got it!</a>')
+    .on('click', function() {
+      // XXX meh, so hacky
+      $('div.top').height($('div.controls').outerHeight());
+      $('p.intro').hide(500);
+    })
+    .appendTo($('p.intro'));
 
   $('#colors-picker .btn').click(function(){
     var $this = $(this);
@@ -235,6 +245,7 @@ var lazyColor = (function(exports){
     // TODO don't assume it's on `window`
     lazyColor.renderColorTable(window[$this.attr('rel')]);
   });
+
 
 })();
 
