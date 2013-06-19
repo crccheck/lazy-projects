@@ -92,7 +92,7 @@ var utils = (function(){
 })(window);
 
 
-// Interaction UI
+// the code to generate the tbody
 /*global $tbody, Color, d3 */
 var lazyColor = (function(exports){
   "use strict";
@@ -208,21 +208,34 @@ var lazyColor = (function(exports){
     utils.newColor(color);
   });
 
+  // exports
+  return {
+    renderColorTable: renderColorTable,
+    sort: sortColorTable
+  };
+})();
+
+
+// TOPBAR UI
+//
+// code for wiring up the widgets in the top bar to the app.
+// TODO move input code here
+// TODO move slider code here
+(function(){
+  "use strict";
+
   var ACTIVE_CLASS = "btn-primary";
+
   $('#colors-picker .btn').click(function(){
     var $this = $(this);
     if ($this.hasClass(ACTIVE_CLASS)) {
       return;
     }
     $this.addClass(ACTIVE_CLASS).siblings().removeClass(ACTIVE_CLASS);
-    renderColorTable(window[$this.attr('rel')]);
+    // TODO don't assume it's on `window`
+    lazyColor.renderColorTable(window[$this.attr('rel')]);
   });
 
-  // exports
-  return {
-    renderColorTable: renderColorTable,
-    sort: sortColorTable
-  };
 })();
 
 
