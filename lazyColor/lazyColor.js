@@ -75,7 +75,7 @@ var utils = (function() {
 
 // the code to generate the tbody
 /*global $tbody, Color, d3 */
-var lazyColor = (function(exports){
+var lazyColor = (function(){
   "use strict";
 
   var data,
@@ -93,26 +93,6 @@ var lazyColor = (function(exports){
         v: 0
       };
 
-  // bind DOM to `weights`
-  $('#weight-h').on('change', function(){
-    weights.h = this.value;
-    if (typeof lastD !== 'undefined') {
-      sortColorTable(lastD);
-    }
-  });
-  $('#weight-s').on('change', function(){
-    weights.s = this.value;
-    if (typeof lastD !== 'undefined') {
-      sortColorTable(lastD);
-    }
-  });
-  $('#weight-v').on('change', function(){
-    weights.v = this.value;
-    if (typeof lastD !== 'undefined') {
-      sortColorTable(lastD);
-    }
-  });
-
   var distance = function(c1, c2) {
     return Math.abs(c1.l - c2.l) +
       Math.abs(c1.a - c2.a) +
@@ -120,6 +100,26 @@ var lazyColor = (function(exports){
       weights.h * Math.abs(c1.h - c2.h) +
       weights.s * Math.abs(c1.s - c2.s) +
       weights.v * Math.abs(c1.v - c2.v);
+  };
+
+  // a template.... ish
+  var templateish = function(d){
+    var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
+      ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
+    return '<td style="background-color: transparent;">&nbsp;</td>' +
+      '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
+      '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
+      '<td class="name">' + d.name + '</td>' +
+      '<td class="hex">' + d.hex + '</td>' +
+      '<tr>';
+  };
+
+  var setWeight = function(key, value) {
+    weights[key] = value;
+    // if table was already sorted once, re-sort
+    if (typeof lastD !== 'undefined') {
+      sortColorTable(lastD);
+    }
   };
 
   var sortColorTable = function(d) {
@@ -161,17 +161,6 @@ var lazyColor = (function(exports){
       return d;
     });
 
-    // a template.... ish
-    var templateish = function(d){
-      var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
-        ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
-      return '<td style="background-color: transparent;">&nbsp;</td>' +
-        '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
-        '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
-        '<td class="name">' + d.name + '</td>' +
-        '<td class="hex">' + d.hex + '</td>' +
-        '<tr>';
-    };
     rows = rows.data(data);
     // CREATE
     rows.enter()
@@ -210,8 +199,8 @@ var lazyColor = (function(exports){
   };
 
 
-  // exports
   return {
+    setWeight: setWeight,
     renderColorTable: renderColorTable,
     newColor: newColor,
     sort: sortColorTable
@@ -223,7 +212,6 @@ var lazyColor = (function(exports){
 //
 // code for wiring up the widgets in the top bar to the app.
 // TODO move input code here
-// TODO move slider code here
 (function(){
   "use strict";
 
@@ -244,6 +232,17 @@ var lazyColor = (function(exports){
     if (color) {
       lazyColor.newColor(color);
     }
+  });
+
+  // bind DOM to `weights`
+  $('#weight-h').on('change', function(){
+    lazyColor.setWeight('h', this.value);
+  });
+  $('#weight-s').on('change', function(){
+    lazyColor.setWeight('s', this.value);
+  });
+  $('#weight-v').on('change', function(){
+    lazyColor.setWeight('v', this.value);
   });
 
   $('#colors-picker .btn').click(function(){
