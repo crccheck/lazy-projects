@@ -114,6 +114,19 @@ var lazyColor = (function(){
       '<tr>';
   };
 
+  // convert ['name', '#abc'] to a data point
+  var getDatum = function(value){
+    // manually extend the hash instead of using an extend helper for speed
+    var d = Color.convert(value[1].substr(1), 'lab'),
+        hsv = Color.convert(value[1].substr(1), 'hsv');
+    d.name = value[0];
+    d.hex = value[1];
+    d.h = hsv.h;
+    d.s = hsv.s;
+    d.v = hsv.v;
+    return d;
+  };
+
   var setWeight = function(key, value) {
     weights[key] = value;
     // if table was already sorted once, re-sort
@@ -149,17 +162,7 @@ var lazyColor = (function(){
   // arguments:
   //   colors: an array of [name, rgb]
   var renderColorTable = function(colors) {
-    data = colors.map(function(value) {
-      // manually extend the hash instead of using an extend helper for speed
-      var d = Color.convert(value[1].substr(1), 'lab'),
-          hsv = Color.convert(value[1].substr(1), 'hsv');
-      d.name = value[0];
-      d.hex = value[1];
-      d.h = hsv.h;
-      d.s = hsv.s;
-      d.v = hsv.v;
-      return d;
-    });
+    data = colors.map(getDatum);
 
     rows = rows.data(data);
     // CREATE
@@ -176,20 +179,13 @@ var lazyColor = (function(){
     $first = $el.find('tr > td:nth-child(1)');
   };
 
+
   // change color
   var newColor = function(hex, inPopState) {
-    var old_color = window._oldColor, lab;
-    if (hex && hex == old_color) {
+    if (hex && hex == window._oldColor) {
       return;
     }
-    var datum = Color.convert(hex, 'lab'),
-        hsv = Color.convert(hex, 'hsv');
-    datum.name = 'unknown';
-    datum.hex = '#' + hex;
-    datum.h = hsv.h;
-    datum.s = hsv.s;
-    datum.v = hsv.v;
-    sortColorTable(datum);
+    sortColorTable(getDatum(['unknown', '#' + hex]));
     window._oldColor = hex;
     if (ENABLE_HISTORY && inPopState !== true){
       history.pushState({ color: hex },
