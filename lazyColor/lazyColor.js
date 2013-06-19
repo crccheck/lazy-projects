@@ -11,9 +11,10 @@ var ENABLE_HISTORY = location.protocol.substr(0,4) == 'http' &&
                      window.history && window.history.pushState;
 
 // Utils
-var utils = (function(){
+var utils = (function() {
   "use strict";
-  function isColor(str){
+  // returns the color in hex or false
+  var isColor = function(str) {
     if (str[0] === '#') {
       str = str.substr(1);
     }
@@ -22,33 +23,11 @@ var utils = (function(){
       return str;
     }
     return false;
-  }
-
-  var newColor = function(hex, inPopState) {
-    var old_color = window._oldColor, lab;
-    if (hex && hex != old_color){
-      // TODO pre-compute differences
-      var d = Color.convert(hex, 'lab'),
-          hsv = Color.convert(hex, 'hsv');
-      d.name = 'unknown';
-      d.hex = '#' + hex;
-      d.h = hsv.h;
-      d.s = hsv.s;
-      d.v = hsv.v;
-      lazyColor.sort(d);
-      window._oldColor = hex;
-      if (ENABLE_HISTORY && inPopState !== true){
-        history.pushState({ color: hex },
-          window.appHistory.newTitle(hex),
-          window.appHistory.newPath(hex));
-      }
-    }
   };
 
   // exports
   return {
-    isColor: isColor,
-    newColor: newColor
+    isColor: isColor
   };
 })();
 
@@ -72,7 +51,7 @@ var utils = (function(){
     if (!state || !state.color){ return; }
     $input.val(state.color);
     $('.input-label').text(state.color);
-    utils.newColor(state.color, true);
+    lazyColor.newColor(state.color, true);
   });
 
   // autopopulate input if color found in url
@@ -207,14 +186,33 @@ var lazyColor = (function(exports){
     $input.change();
   };
 
-  $input.on('keyup change', function(){
-    var color = utils.isColor($input.val());
-    utils.newColor(color);
-  });
+  // change color
+  var newColor = function(hex, inPopState) {
+    var old_color = window._oldColor, lab;
+    if (hex && hex == old_color) {
+      return;
+    }
+    var datum = Color.convert(hex, 'lab'),
+        hsv = Color.convert(hex, 'hsv');
+    datum.name = 'unknown';
+    datum.hex = '#' + hex;
+    datum.h = hsv.h;
+    datum.s = hsv.s;
+    datum.v = hsv.v;
+    sortColorTable(datum);
+    window._oldColor = hex;
+    if (ENABLE_HISTORY && inPopState !== true){
+      history.pushState({ color: hex },
+        window.appHistory.newTitle(hex),
+        window.appHistory.newPath(hex));
+    }
+  };
+
 
   // exports
   return {
     renderColorTable: renderColorTable,
+    newColor: newColor,
     sort: sortColorTable
   };
 })();
@@ -240,6 +238,11 @@ var lazyColor = (function(exports){
     })
     .appendTo($('p.intro'));
 
+  $input.on('keyup change', function(){
+    var color = utils.isColor($input.val());
+    lazyColor.newColor(color);
+  });
+
   $('#colors-picker .btn').click(function(){
     var $this = $(this);
     if ($this.hasClass(ACTIVE_CLASS)) {
@@ -249,7 +252,6 @@ var lazyColor = (function(exports){
     // TODO don't assume it's on `window`
     lazyColor.renderColorTable(window[$this.attr('rel')]);
   });
-
 
 })();
 
