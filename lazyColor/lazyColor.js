@@ -71,6 +71,7 @@ var utils = (function(){
     var state = history.state;
     if (!state || !state.color){ return; }
     $input.val(state.color);
+    $('.input-label').text(state.color);
     utils.newColor(state.color, true);
   });
 
@@ -85,6 +86,7 @@ var utils = (function(){
     appHistory.basePath = pathname.join('/') + '/';
     // console.log("override basepath", appHistory.basePath, pathname);
     $input.val(t).change();
+    $('.input-label').text(t);
   }
 
   // exports
@@ -148,6 +150,8 @@ var lazyColor = (function(exports){
     });
     // update form element
     $input.val(d.hex);
+    $('.input-label').text(d.hex);
+
     // HACK to get css transitions to work, need to delay setting color
     setTimeout(function() {
       $first.css('backgroundColor', d.hex);
