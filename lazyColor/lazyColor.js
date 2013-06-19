@@ -176,20 +176,28 @@ var lazyColor = (function(exports){
       return d;
     });
 
+    // a template.... ish
+    var templateish = function(d){
+      var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
+        ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
+      return '<td style="background-color: transparent;">&nbsp;</td>' +
+        '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
+        '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
+        '<td class="name">' + d.name + '</td>' +
+        '<td class="hex">' + d.hex + '</td>' +
+        '<tr>';
+    };
     rows = rows.data(data);
+    // CREATE
     rows.enter()
-      .append('tr').html(function(d){
-        var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
-          ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
-        return '<td style="background-color: transparent;">&nbsp;</td>' +
-          '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
-          '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
-          '<td class="name">' + d.name + '</td>' +
-          '<td class="hex">' + d.hex + '</td>' +
-          '<tr>';
-      })
+      .append('tr').html(templateish)
       .on('click', sortColorTable);
-    rows.exit().remove();
+    // UPDATE
+    rows
+      .html(templateish);
+    // DELETE
+    rows.exit()
+      .remove();
 
     $first = $tbody.find('tr > td:nth-child(1)');
     $input.change();
