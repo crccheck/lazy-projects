@@ -1,4 +1,5 @@
 // bust cache during dev
+// TODO how can I use __DEV__ ?
 require.config({
   urlArgs: "_" + (new Date()).getTime()
 });
