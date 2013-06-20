@@ -3,12 +3,21 @@
 require.config({
   urlArgs: "_" + (new Date()).getTime(),
   paths: {
-    jquery: 'vendor/jquery'
+    jquery: 'vendor/jquery',
+    d3: 'vendor/d3',
+    color: 'vendor/i-color.dev'
+  },
+  shim: {
+    'd3': {
+      exports: 'd3'
+    },
+    'color': {
+      exports: 'Color'
+    }
   }
 });
 
 
-/*global $ */
 require(['jquery', 'utils', 'tbody'],
   function($, utils, Tbody) {
   "use strict";

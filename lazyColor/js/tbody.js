@@ -1,7 +1,6 @@
 // the code to generate the tbody
-/*global d3, Color */
 /*jshint expr:true */
-define(['jquery'], function($){
+define(['jquery', 'd3', 'color'], function($, d3, Color){
   "use strict";
 
   function TBody($el, options) {
