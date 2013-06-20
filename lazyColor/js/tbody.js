@@ -7,41 +7,82 @@ define(function(){
   var $input = $('#colorInput');
 
 
-  var data,
-      lastD,
-      $first,
-      $el,
-      el,
-      paper,
-      rows,
-      weights = {
-        l: 1,
-        a: 1,
-        b: 1,
-        h: 0,
-        s: 0,
-        v: 0
-      };
+  function TBody(el, options) {
+    this.data = null;  // color data [[name, hex], ...]
+    this.lastD = null;  // cheat used to determine if table has been sorted
+    this.$first = null;  // cache selector to mass set input color
+    this.$el = null;  // tbody $el
+    this.el = null;  // tbody el
+    this.paper = null;  // d3 container
+    this.rows = null;  // d3 data-bound elems
+    this.weights = {
+      l: 1,
+      a: 1,
+      b: 1,
+      h: 0,
+      s: 0,
+      v: 0
+    };
 
-  var distance = function(c1, c2) {
+    this.init(el);
+  }
+
+
+  TBody.prototype.distance = function(c1, c2) {
     return Math.abs(c1.l - c2.l) +
       Math.abs(c1.a - c2.a) +
       Math.abs(c1.b - c2.b) +
-      weights.h * Math.abs(c1.h - c2.h) +
-      weights.s * Math.abs(c1.s - c2.s) +
-      weights.v * Math.abs(c1.v - c2.v);
+      this.weights.h * Math.abs(c1.h - c2.h) +
+      this.weights.s * Math.abs(c1.s - c2.s) +
+      this.weights.v * Math.abs(c1.v - c2.v);
   };
 
-  // a template.... ish
-  var templateish = function(d){
-    var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
-      ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
-    return '<td style="background-color: transparent;">&nbsp;</td>' +
-      '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
-      '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
-      '<td class="name">' + d.name + '</td>' +
-      '<td class="hex">' + d.hex + '</td>';
+
+  // set internal properties based on external configuration
+  TBody.prototype.init = function($el) {
+    this.$el = $el;
+    this.el = $el[0];
+    this.paper = d3.select(this.el);
+    this.rows = this.paper.selectAll('tr');
   };
+
+
+  // API for changing weights
+  TBody.prototype.setWeight = function(key, value) {
+    this.weights[key] = value;
+    // if table was already sorted once, re-sort
+    if (this.lastD) {
+      this.sort(this.lastD);
+    }
+  };
+
+
+  TBody.prototype.sort = function(d) {
+    var self = this;
+
+    for (var i = 0, n = this.data.length; i < n; i++) {
+      this.data[i].distance = this.distance(d, this.data[i]);
+    }
+    this.rows.sort(function(a, b) {
+      return a.distance - b.distance;
+    });
+    // update form element
+    $input.val(d.hex);
+    $('.input-label').text(d.hex);
+
+    // HACK to get css transitions to work, need to delay setting color
+    setTimeout(function() {
+      self.$first.css('backgroundColor', d.hex);
+    }, 1);
+
+    // scroll to the top of the page
+    var $page = $('html, body');
+    if (!$page.filter(':animated').length){  // basic debounce
+      $page.animate({'scrollTop': 0});
+    }
+    this.lastD = d;
+  };
+
 
   // convert ['name', '#abc'] to a data point
   var getDatum = function(value){
@@ -56,74 +97,52 @@ define(function(){
     return d;
   };
 
-  // get external configuration
-  var init = function(_$el) {
-    $el = _$el;
-    el = $el[0];
-    paper = d3.select(el);
-    rows = paper.selectAll('tr');
+
+  // a template.... ish
+  var templateish = function(d){
+    var title = 'LAB: ' + d.l.toFixed(2) + ',' + d.a.toFixed(2) + ',' + d.b.toFixed(2) +
+      ' HSV: ' + d.h + ',' + d.s + ',' + d.v;
+    return '<td style="background-color: transparent;">&nbsp;</td>' +
+      '<td style="background-color: ' + d.hex + ';" title="' + title + '">' +
+      '<span class="named" style="background-color: ' + d.name + ';">&nbsp;</span>&nbsp;</td>' +
+      '<td class="name">' + d.name + '</td>' +
+      '<td class="hex">' + d.hex + '</td>';
   };
 
-  var setWeight = function(key, value) {
-    weights[key] = value;
-    // if table was already sorted once, re-sort
-    if (typeof lastD !== 'undefined') {
-      sortColorTable(lastD);
-    }
-  };
 
-  var sortColorTable = function(d) {
-    for (var i = 0, n = data.length; i < n; i++) {
-      data[i].distance = distance(d, data[i]);
-    }
-    rows.sort(function(a, b) {
-      return a.distance - b.distance;
-    });
-    // update form element
-    $input.val(d.hex);
-    $('.input-label').text(d.hex);
-
-    // HACK to get css transitions to work, need to delay setting color
-    setTimeout(function() {
-      $first.css('backgroundColor', d.hex);
-    }, 1);
-    // scroll to the top of the page
-    var $page = $('html, body');
-    if (!$page.filter(':animated').length){  // basic debounce
-      $page.animate({'scrollTop': 0});
-    }
-    lastD = d;
-  };
-
-  // render the table, replacing the tbody
+  // render the table
   // arguments:
   //   colors: an array of [name, rgb]
-  var renderColorTable = function(colors) {
-    data = colors.map(getDatum);
+  TBody.prototype.setColors = function(colors) {
+    var self = this;
 
-    rows = rows.data(data);
+    this.data = colors.map(getDatum);
+
+    this.rows = this.rows.data(this.data);
     // CREATE
-    rows.enter()
+    this.rows.enter()
       .append('tr').html(templateish)
-      .on('click', sortColorTable);
+      .on('click', function(d){ self.sort(d); });
     // UPDATE
-    rows
+    this.rows
       .html(templateish);
     // DELETE
-    rows.exit()
+    this.rows.exit()
       .remove();
 
-    $first = $el.find('tr > td:nth-child(1)');
+    this.$first = this.$el.find('tr > td:nth-child(1)');
   };
 
 
   // change color
-  var newColor = function(hex, inPopState) {
-    if (hex && hex == window._oldColor) {
+  // wrapper around `sort`
+  TBody.prototype.newColor = function(hex) {
+    if (hex && hex == this._oldColor) {
+      // nothing changed, skip
       return;
     }
-    sortColorTable(getDatum(['unknown', '#' + hex]));
-    window._oldColor = hex;
+    this.sort(getDatum(['unknown', '#' + hex]));
+    this._oldColor = hex;
     // TODO
     // if (ENABLE_HISTORY && inPopState !== true){
     //   history.pushState({ color: hex },
@@ -133,11 +152,5 @@ define(function(){
   };
 
 
-  return {
-    init: init,
-    setWeight: setWeight,
-    renderColorTable: renderColorTable,
-    newColor: newColor,
-    sort: sortColorTable
-  };
+  return TBody;
 });
