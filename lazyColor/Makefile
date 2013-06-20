@@ -10,7 +10,7 @@ css:
 	sass --watch --compass --style compressed lazyColor.sass
 
 lazyColor.js:
-	node vendor/r.js -o baseUrl=js name=../vendor/almond include=main out=$@ wrap=true
+	node vendor/r.js -o build.js out=$@
 
 clean:
 	rm -rf lazyColor.js
