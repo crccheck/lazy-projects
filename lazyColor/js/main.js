@@ -61,6 +61,7 @@ require(['utils', 'tbody', 'history'], function(utils, tbody, appHistory) {
   });
 
 
+  tbody.init($tbody);
   tbody.renderColorTable(w3ccolors);
 
 });

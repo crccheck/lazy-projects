@@ -4,16 +4,16 @@ define(function(){
   "use strict";
 
   // FIXME
-  var $tbody = $('#colorTable > tbody'),
-      $input = $('#colorInput');
+  var $input = $('#colorInput');
 
 
   var data,
       lastD,
       $first,
-      $el = $tbody,
-      paper = d3.select($el[0]),
-      rows = paper.selectAll('tr'),
+      $el,
+      el,
+      paper,
+      rows,
       weights = {
         l: 1,
         a: 1,
@@ -54,6 +54,14 @@ define(function(){
     d.s = hsv.s;
     d.v = hsv.v;
     return d;
+  };
+
+  // get external configuration
+  var init = function(_$el) {
+    $el = _$el;
+    el = $el[0];
+    paper = d3.select(el);
+    rows = paper.selectAll('tr');
   };
 
   var setWeight = function(key, value) {
@@ -126,6 +134,7 @@ define(function(){
 
 
   return {
+    init: init,
     setWeight: setWeight,
     renderColorTable: renderColorTable,
     newColor: newColor,
