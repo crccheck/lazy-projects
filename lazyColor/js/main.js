@@ -61,6 +61,11 @@ require(['utils', 'tbody', 'history'], function(utils, Tbody, appHistory) {
   });
 
 
-  var tbody = new Tbody($('#colorTable > tbody'));
+  var tbody = new Tbody($('#colorTable > tbody'), {
+    postSort: function(d) {
+      $input.val(d.hex);
+      $('.input-label').text(d.hex);
+    }
+  });
   tbody.setColors(colors.w3ccolors);
 });

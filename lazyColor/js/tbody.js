@@ -1,13 +1,11 @@
 // the code to generate the tbody
 /*global $, d3, Color */
+/*jshint expr:true */
 define(function(){
   "use strict";
 
-  // FIXME
-  var $input = $('#colorInput');
-
-
-  function TBody(el, options) {
+  function TBody($el, options) {
+    // properties
     this.data = null;  // color data [[name, hex], ...]
     this.lastD = null;  // cheat used to determine if table has been sorted
     this.$first = null;  // cache selector to mass set input color
@@ -24,7 +22,10 @@ define(function(){
       v: 0
     };
 
-    this.init(el);
+    // events
+    this.postSort = null;
+
+    this.init($el, options);
   }
 
 
@@ -39,11 +40,14 @@ define(function(){
 
 
   // set internal properties based on external configuration
-  TBody.prototype.init = function($el) {
+  TBody.prototype.init = function($el, options) {
+    options = options || {};
+
     this.$el = $el;
     this.el = $el[0];
     this.paper = d3.select(this.el);
     this.rows = this.paper.selectAll('tr');
+    this.postSort = options.postSort;
   };
 
 
@@ -66,9 +70,8 @@ define(function(){
     this.rows.sort(function(a, b) {
       return a.distance - b.distance;
     });
-    // update form element
-    $input.val(d.hex);
-    $('.input-label').text(d.hex);
+
+    this.postSort && this.postSort(d);
 
     // HACK to get css transitions to work, need to delay setting color
     setTimeout(function() {
