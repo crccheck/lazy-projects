@@ -2,9 +2,14 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     sass:
-      dist:
+      dev:
         options:
           sourcemap: true
+        files:
+          'lazyColor.css': 'lazyColor.sass'
+      prod:
+        options:
+          style: 'compressed'
         files:
           'lazyColor.css': 'lazyColor.sass'
     autoprefixer:
@@ -20,10 +25,14 @@ module.exports = (grunt) ->
       all: 'js/*.js'
     browserify:
       options:
-        bundleOptions:
-          debug: true
         transform: ['browserify-shim']
-      all:
+      dev:
+        options:
+          bundleOptions:
+            debug: true
+        files:
+          'lazyColor.js': 'js/main.js'
+      prod:
         files:
           'lazyColor.js': 'js/main.js'
     watch:
@@ -31,7 +40,7 @@ module.exports = (grunt) ->
         livereload: true
       sass:
         files: ['*.sass']
-        tasks: ['sass', 'autoprefixer']
+        tasks: ['sass:dev', 'autoprefixer']
         options:
           livereload: false
           # spawn has to be on or else the css watch won't catch changes
@@ -42,7 +51,7 @@ module.exports = (grunt) ->
           spawn: false
       js:
         files: ['js/*.js']
-        tasks: ['browserify']
+        tasks: ['browserify:dev']
         options:
           spawn: false
 
@@ -54,8 +63,10 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
   # build the assets needed
-  grunt.registerTask('build', ['sass', 'autoprefixer', 'browserify'])
+  grunt.registerTask('build', ['sass:dev', 'autoprefixer', 'browserify:dev'])
   # build the assets with sanity checks
-  grunt.registerTask('default', ['sass', 'autoprefixer', 'jshint', 'browserify'])
+  grunt.registerTask('default', ['sass:dev', 'autoprefixer', 'jshint', 'browserify:dev'])
   # build assets and automatically re-build when a file changes
   grunt.registerTask('dev', ['build', 'watch'])
+  # build the assets needed
+  grunt.registerTask('prod', ['sass:prod', 'autoprefixer', 'browserify:prod'])
