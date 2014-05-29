@@ -1,7 +1,7 @@
 {
   "name": "lazyColor",
   "version": "0.0.0",
-  "main": "lazyColor.js",
+  "main": "js/main.js",
   "author": "",
   "license": "Apache",
   "browser": {
