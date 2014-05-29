@@ -7,7 +7,7 @@
   "browser": {
     "Color": "./js/vendor/i-color.dev.js",
     "d3": "./js/vendor/d3.js",
-    "jquery": "./js/vendor/jquery.js"
+    "jquery": "./js/vendor/jquery-2.1.1.min.js"
   },
   "browserify-shim": {
     "Color": "Color",
