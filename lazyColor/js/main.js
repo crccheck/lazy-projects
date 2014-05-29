@@ -31,6 +31,7 @@ $input.on('keyup change', function(){
   var color = utils.isColor($input.val());
   if (color) {
     tbody.newColor(color);
+    location.hash = color;
   }
 });
 
@@ -59,6 +60,13 @@ var tbody = new Tbody($('#colorTable > tbody'), {
   postSort: function(d) {
     $input.val(d.hex);
     $('.input-label').text(d.hex);
+    location.hash = d.hex;
   }
 });
 tbody.setColors(colors.w3ccolors);
+if (location.hash) {
+  var color = utils.isColor(location.hash);
+  if (color) {
+    tbody.newColor(color);
+  }
+}
