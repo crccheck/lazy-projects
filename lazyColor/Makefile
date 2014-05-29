@@ -1,13 +1,7 @@
-dev:
-	@$(MAKE) -s -j2 devdev
-
-devdev: serve css
+dev: serve
 
 serve:
 	python -m SimpleHTTPServer
-
-css:
-	sass --watch --compass --style compressed lazyColor.sass
 
 lazyColor.js:
 	node vendor/r.js -o build.js out=$@

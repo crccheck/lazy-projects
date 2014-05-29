@@ -16,6 +16,23 @@ module.exports = (grunt) ->
         src: 'lazyColor.css'
         # overwrite original
         dest: 'lazyColor.css'
+    jshint:
+      all: 'js/*.js'
+    watch:
+      options:
+        livereload: true
+      sass:
+        files: ['*.sass']
+        tasks: ['sass', 'autoprefixer']
+        options:
+          livereload: false
+          # spawn has to be on or else the css watch won't catch changes
+          spawn: true
+      css:
+        files: ['*.css']
+        options:
+          spawn: false
+
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-autoprefixer'
