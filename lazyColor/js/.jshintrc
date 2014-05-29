@@ -1,0 +1,7 @@
+{
+  // environments
+  'browser': true,
+  'devel': true,
+  'node': true,
+  'quotmark': false
+}
