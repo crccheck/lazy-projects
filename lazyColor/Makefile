@@ -1,9 +1,9 @@
 dev:
 	@$(MAKE) -s -j2 devdev
 
-devdev: server css
+devdev: serve css
 
-server:
+serve:
 	python -m SimpleHTTPServer
 
 css:
@@ -20,4 +20,4 @@ build: lazyColor.js
 all: clean build
 
 
-.PHONY: dev dev devdev server css clean build all
+.PHONY: lazyColor.js
