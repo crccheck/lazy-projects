@@ -1,9 +1,5 @@
-@import "compass/css3/transition"
-
 .top
-  +transition-property(height)
-  +transition-duration(0.55s)
-  +transition-timing-function(linear)
+  transition: height 0.55s linear
   height: 9em
 
 .top-inner
@@ -18,9 +14,7 @@
   font-weight: bold
 
 td
-  +transition-property(background-color)
-  +transition-duration(1s)
-  +transition-timing-function(ease)
+  transition: background-color 1s ease
 
 .named
   background-color: #FFF

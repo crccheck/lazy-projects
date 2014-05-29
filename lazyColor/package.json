@@ -1,0 +1,26 @@
+{
+  "name": "lazyColor",
+  "version": "0.0.0",
+  "main": "js/main.js",
+  "author": "",
+  "license": "Apache",
+  "browser": {
+    "Color": "./js/vendor/i-color.dev.js",
+    "d3": "./js/vendor/d3.js",
+    "jquery": "./js/vendor/jquery-2.1.1.min.js"
+  },
+  "browserify-shim": {
+    "Color": "Color",
+    "d3": "d3"
+  },
+  "devDependencies": {
+    "browserify": "^4.1.6",
+    "browserify-shim": "^3.5.0",
+    "grunt": "^0.4.5",
+    "grunt-autoprefixer": "^0.7.3",
+    "grunt-browserify": "^2.1.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-sass": "^0.7.3",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

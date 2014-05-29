@@ -1,2 +1,8 @@
 .sass-cache
+node_modules
 
+# generated files
+lazyColor.css
+lazyColor.css.map
+lazyColor.css.patch
+lazyColor.js
