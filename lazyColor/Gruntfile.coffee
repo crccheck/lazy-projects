@@ -35,6 +35,10 @@ module.exports = (grunt) ->
       prod:
         files:
           'lazyColor.js': 'js/main.js'
+    uglify:
+      prod:
+        files:
+          'lazyColor.js': 'lazyColor.js'
     watch:
       options:
         livereload: true
@@ -60,6 +64,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-autoprefixer'
   grunt.loadNpmTasks 'grunt-contrib-jshint'
   grunt.loadNpmTasks 'grunt-browserify'
+  grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
   # build the assets needed
@@ -69,4 +74,4 @@ module.exports = (grunt) ->
   # build assets and automatically re-build when a file changes
   grunt.registerTask('dev', ['build', 'watch'])
   # build the assets needed
-  grunt.registerTask('prod', ['sass:prod', 'autoprefixer', 'browserify:prod'])
+  grunt.registerTask('prod', ['sass:prod', 'autoprefixer', 'browserify:prod', 'uglify:prod'])
